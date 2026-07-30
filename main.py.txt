@@ -1,0 +1,43 @@
+# coding: utf-8
+import sys
+from ai_engine import analyze_complaint_with_groq
+from mock_api import send_to_government_agency
+
+# Siz taqdim etgan haqiqiy Groq API kaliti ulandi:
+GROQ_API_KEY = "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"
+
+def run_govtech_system():
+    print("=" * 60)
+    print("      Murojaat.AI — SMART GOVTECH PLATFORMASI PROTOTIPI      ")
+    print("=" * 60)
+    
+    print("\nTizim ishga tushdi. Fuqaro sifatida o'z muammoingizni yozib qoldiring.")
+    print("(Dasturdan chiqish uchun 'exit' deb yozing)\n")
+    
+    while True:
+        user_complaint = input("Murojaat matni: ")
+        
+        if user_complaint.lower() == 'exit':
+            print("\nDastur to'xtatildi. GovTech tizimi o'chirildi.")
+            break
+            
+        if not user_complaint.strip():
+            continue
+            
+        print("\n[1/2] Sun'iy intellekt (Groq Llama-3) matnni tahlil qilmoqda...")
+        detected_agency_id = analyze_complaint_with_groq(user_complaint, GROQ_API_KEY)
+        print(f"--> AI Qarori: {detected_agency_id}")
+        
+        print("[2/2] Namunaviy Davlat API tizimiga so'rov yuborilmoqda...")
+        api_response = send_to_government_agency(detected_agency_id, user_complaint)
+        
+        print("\n" + "-" * 40)
+        print(f"STATUS: {api_response['status'].upper()} (Code: {api_response['code']})")
+        print(f"TASHKILOT: {api_response['agency_name']}")
+        print(f"BO'LIM: {api_response['assigned_department']}")
+        print(f"VAQT: {api_response['timestamp']}")
+        print(f"XABAR: {api_response['message']}")
+        print("-" * 40 + "\n")
+
+if __name__ == "__main__":
+    run_govtech_system()
